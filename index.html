@@ -6,38 +6,143 @@
   <title>OHLC Levels Calculator</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    body { font-family: system-ui; max-width: 400px; margin: 20px auto; padding: 0 16px; }
-    label { display: block; margin-top: 12px; }
-    input { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
-    button { margin-top: 20px; width: 100%; padding: 12px; font-size: 18px; background: #007aff; color: white; border: none; border-radius: 8px; }
-    .result { margin-top: 24px; display: none; }
-    .level { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ccc; }
-    .level:last-child { border-bottom: none; }
+    body {
+      font-family: system-ui;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 24px;
+      display: none;
+    }
+    .level {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #ccc;
+    }
+    .level:last-child {
+      border-bottom: none;
+    }
+
+    /* ---------- Password overlay ---------- */
+    #passwordOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .password-box {
+      text-align: center;
+      padding: 24px;
+    }
+    .password-box input {
+      margin: 12px 0;
+    }
+    .password-box button {
+      width: auto;
+      padding: 10px 24px;
+    }
+    .error-msg {
+      color: red;
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h2>OHLC Levels Calculator</h2>
-  <label>Open (O)</label>
-  <input type="number" id="open" placeholder="e.g. 100.50" step="any">
-  <label>High (H)</label>
-  <input type="number" id="high" placeholder="e.g. 105.20" step="any">
-  <label>Low (L)</label>
-  <input type="number" id="low" placeholder="e.g. 99.80" step="any">
-  <label>Close (C)</label>
-  <input type="number" id="close" placeholder="e.g. 103.00" step="any">
 
-  <button onclick="calculateLevels()">Calculate</button>
+  <!-- Password overlay (hidden after first unlock) -->
+  <div id="passwordOverlay">
+    <div class="password-box">
+      <h2>App Locked</h2>
+      <p>Enter password to continue</p>
+      <input type="password" id="passwordInput" placeholder="Password">
+      <br>
+      <button onclick="checkPassword()">Unlock</button>
+      <div class="error-msg" id="errorMsg">Incorrect password</div>
+    </div>
+  </div>
 
-  <div class="result" id="resultContainer">
-    <div class="level"><span>Highest Resistance</span><strong id="r3"></strong></div>
-    <div class="level"><span>Higher Resistance</span><strong id="r2"></strong></div>
-    <div class="level"><span>High Resistance</span><strong id="r1"></strong></div>
-    <div class="level"><span>Low Support</span><strong id="s1"></strong></div>
-    <div class="level"><span>Lower Support</span><strong id="s2"></strong></div>
-    <div class="level"><span>Lowest Support</span><strong id="s3"></strong></div>
+  <!-- Main calculator (hidden until unlocked) -->
+  <div id="mainApp" style="display: none;">
+    <h2>OHLC Levels Calculator</h2>
+    <label>Open (O)</label>
+    <input type="number" id="open" placeholder="e.g. 100.50" step="any">
+    <label>High (H)</label>
+    <input type="number" id="high" placeholder="e.g. 105.20" step="any">
+    <label>Low (L)</label>
+    <input type="number" id="low" placeholder="e.g. 99.80" step="any">
+    <label>Close (C)</label>
+    <input type="number" id="close" placeholder="e.g. 103.00" step="any">
+
+    <button onclick="calculateLevels()">Calculate</button>
+
+    <div class="result" id="resultContainer">
+      <div class="level"><span>Highest Resistance</span><strong id="r3"></strong></div>
+      <div class="level"><span>Higher Resistance</span><strong id="r2"></strong></div>
+      <div class="level"><span>High Resistance</span><strong id="r1"></strong></div>
+      <div class="level"><span>Low Support</span><strong id="s1"></strong></div>
+      <div class="level"><span>Lower Support</span><strong id="s2"></strong></div>
+      <div class="level"><span>Lowest Support</span><strong id="s3"></strong></div>
+    </div>
   </div>
 
   <script>
+    // ---------- Password protection ----------
+    const PASSWORD = "Gary9766!!";  // <-- CHANGE THIS TO YOUR OWN PASSWORD
+
+    // Check if already unlocked in this browser
+    if (localStorage.getItem("ohlc_unlocked") === "true") {
+      document.getElementById("passwordOverlay").style.display = "none";
+      document.getElementById("mainApp").style.display = "block";
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value;
+      if (input === PASSWORD) {
+        localStorage.setItem("ohlc_unlocked", "true");
+        document.getElementById("passwordOverlay").style.display = "none";
+        document.getElementById("mainApp").style.display = "block";
+      } else {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    }
+
+    // Allow pressing Enter in password field
+    document.getElementById("passwordInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") checkPassword();
+    });
+
+    // ---------- Your calculator code (unchanged) ----------
     function calculateLevels() {
       const O = parseFloat(document.getElementById('open').value);
       const H = parseFloat(document.getElementById('high').value);
@@ -49,36 +154,29 @@
         return;
       }
 
-      // Helpers
       const trunc = Math.trunc;
       const midpoint = (H + L) / 2;
       const halfRange = (H - L) / 2;
       const fullRange = H - L;
 
-      // Multipliers (1 - percentage)
-      const m39 = 1 - 0.39;   // 0.61
-      const m37 = 1 - 0.37;   // 0.63
-      const m42_5 = 1 - 0.425; // 0.575
-      const m19_3 = 1 - 0.193; // 0.807
-      const m18_5 = 1 - 0.185; // 0.815
+      const m39 = 1 - 0.39;
+      const m37 = 1 - 0.37;
+      const m42_5 = 1 - 0.425;
+      const m19_3 = 1 - 0.193;
+      const m18_5 = 1 - 0.185;
 
       let R1, S1, R2, S2, R3, S3;
 
-      // ---------- CORRECTED R1 & S1 (using halfRange) ----------
       if (C > O) {
-        // Bullish: 39% factor
         R1 = trunc(midpoint + halfRange * m39);
         S1 = trunc(midpoint - halfRange * m39);
       } else if (C < O) {
-        // Bearish: 37% factor
         R1 = trunc(midpoint + halfRange * m37);
         S1 = trunc(midpoint - halfRange * m37);
       } else {
-        R1 = 0;
-        S1 = 0;
+        R1 = S1 = 0;
       }
 
-      // ---------- R2 & S2 (unchanged) ----------
       if (C > O || C < O) {
         R2 = trunc(midpoint + fullRange * m42_5);
         S2 = trunc(midpoint - fullRange * m42_5);
@@ -86,7 +184,6 @@
         R2 = S2 = 0;
       }
 
-      // ---------- R3 & S3 ----------
       if (C > O) {
         R3 = trunc(midpoint + fullRange * m19_3);
         S3 = trunc(midpoint - fullRange * m19_3);
@@ -97,7 +194,6 @@
         R3 = S3 = 0;
       }
 
-      // Display
       document.getElementById('r3').textContent = R3;
       document.getElementById('r2').textContent = R2;
       document.getElementById('r1').textContent = R1;
