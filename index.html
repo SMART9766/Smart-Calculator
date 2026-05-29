@@ -3,33 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OHLC Support/Resistance</title>
-  <!-- PWA manifest -->
+  <title>OHLC Levels Calculator</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    body { font-family: system-ui; max-width: 400px; margin: 20px auto; padding: 0 16px; }
-    label { display: block; margin-top: 12px; }
-    input { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
-    button { margin-top: 20px; width: 100%; padding: 12px; font-size: 18px; background: #007aff; color: white; border: none; border-radius: 8px; }
-    .result { margin-top: 24px; }
-    .level { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ccc; }
-    .level:last-child { border-bottom: none; }
+    body {
+      font-family: system-ui;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 24px;
+      display: none;
+    }
+    .level {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #ccc;
+    }
+    .level:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
   <h2>OHLC Levels Calculator</h2>
   <label>Open (O)</label>
-  <input type="number" id="open" placeholder="e.g. 100.50">
+  <input type="number" id="open" placeholder="e.g. 100.50" step="any">
   <label>High (H)</label>
-  <input type="number" id="high" placeholder="e.g. 105.20">
+  <input type="number" id="high" placeholder="e.g. 105.20" step="any">
   <label>Low (L)</label>
-  <input type="number" id="low" placeholder="e.g. 99.80">
+  <input type="number" id="low" placeholder="e.g. 99.80" step="any">
   <label>Close (C)</label>
-  <input type="number" id="close" placeholder="e.g. 103.00">
+  <input type="number" id="close" placeholder="e.g. 103.00" step="any">
 
   <button onclick="calculateLevels()">Calculate</button>
 
-  <div class="result" id="resultContainer" style="display:none;">
+  <div class="result" id="resultContainer">
     <div class="level"><span>Highest Resistance</span><strong id="r3"></strong></div>
     <div class="level"><span>Higher Resistance</span><strong id="r2"></strong></div>
     <div class="level"><span>High Resistance</span><strong id="r1"></strong></div>
@@ -40,31 +71,98 @@
 
   <script>
     function calculateLevels() {
-      // Get input values
+      // Get inputs
       const O = parseFloat(document.getElementById('open').value);
       const H = parseFloat(document.getElementById('high').value);
       const L = parseFloat(document.getElementById('low').value);
       const C = parseFloat(document.getElementById('close').value);
 
-      // ---- REPLACE THIS WITH YOUR OWN FORMULA ----
-      // Example: classic floor pivot points
-      const PP = (R1+S1)/2;
-      const R1 = IF(C>O,ROUNDDOWN((((H+L)/2)+((H-((H-L)/2))*(1-39%)),0),IF(C<O,ROUNDDOWN(((H+L)/2)+((H-((H+L)/2))*(1-37%)),0),0));
-      const R2 = IF(C>O,ROUNDDOWN((((H+L)/2)+((H-L)*(1-42.5%)),0),IF(C<O,ROUNDDOWN(((H+L)/2+((H-L)*(1-42.5%)),0),0));
-      const R3 = IF(C>O,ROUNDDOWN((((H+L)/2)+((H-L)*(1-19.3%)),0),IF(C<O,ROUNDDOWN(((H+L)/2+((H-L)*(1-18.5%)),0),0));
-      const S1 = IF(C>O,ROUNDDOWN((((H+L)/2)-((H-((H-L)/2))*(1-39%)),0),IF(C<O,ROUNDDOWN(((H+L)/2)-((H-((H+L)/2))*(1-37%)),0),0));
-      const S2 = IF(C>O,ROUNDDOWN((((H+L)/2)-((H-L)*(1-42.5%)),0),IF(C<O,ROUNDDOWN(((H+L)/2-((H-L)*(1-42.5%)),0),0));
-      const S3 = IF(C>O,ROUNDDOWN((((H+L)/2)-((H-L)*(1-19.3%)),0),IF(C<O,ROUNDDOWN(((H+L)/2-((H-L)*(1-18.5%)),0),0));
-      // -------------------------------------------
+      // Validate
+      if (isNaN(O) || isNaN(H) || isNaN(L) || isNaN(C)) {
+        alert('Please fill in all four OHLC values with numbers.');
+        return;
+      }
 
-      // Display results (rounded to 2 decimals)
-      document.getElementById('r3').textContent = R3.toFixed(2);
-      document.getElementById('r2').textContent = R2.toFixed(2);
-      document.getElementById('r1').textContent = R1.toFixed(2);
-      document.getElementById('s1').textContent = S1.toFixed(2);
-      document.getElementById('s2').textContent = S2.toFixed(2);
-      document.getElementById('s3').textContent = S3.toFixed(2);
+      // --- Your custom formula (translated to JavaScript) ---
 
+      // Helper: Excel ROUNDDOWN(value,0) = Math.trunc(value)
+      const trunc = Math.trunc;
+
+      // Multipliers (1 - percentage)
+      const m39 = 1 - 0.39;   // 0.61
+      const m37 = 1 - 0.37;   // 0.63
+      const m42_5 = 1 - 0.425; // 0.575
+      const m19_3 = 1 - 0.193; // 0.807
+      const m18_5 = 1 - 0.185; // 0.815
+
+      let R1, S1, R2, S2, R3, S3;
+
+      // --- R1 ---
+      if (C > O) {
+        R1 = trunc(((H + L) / 2) + (H - (H - L) / 2) * m39);
+      } else if (C < O) {
+        R1 = trunc(((H + L) / 2) + (H - (H + L) / 2) * m37);
+      } else {
+        R1 = 0;
+      }
+
+      // --- S1 ---
+      if (C > O) {
+        S1 = trunc(((H + L) / 2) - (H - (H - L) / 2) * m39);
+      } else if (C < O) {
+        S1 = trunc(((H + L) / 2) - (H - (H + L) / 2) * m37);
+      } else {
+        S1 = 0;
+      }
+
+      // --- R2 ---
+      if (C > O) {
+        R2 = trunc(((H + L) / 2) + (H - L) * m42_5);
+      } else if (C < O) {
+        R2 = trunc(((H + L) / 2) + (H - L) * m42_5);
+      } else {
+        R2 = 0;
+      }
+
+      // --- S2 ---
+      if (C > O) {
+        S2 = trunc(((H + L) / 2) - (H - L) * m42_5);
+      } else if (C < O) {
+        S2 = trunc(((H + L) / 2) - (H - L) * m42_5);
+      } else {
+        S2 = 0;
+      }
+
+      // --- R3 ---
+      if (C > O) {
+        R3 = trunc(((H + L) / 2) + (H - L) * m19_3);
+      } else if (C < O) {
+        R3 = trunc(((H + L) / 2) + (H - L) * m18_5);
+      } else {
+        R3 = 0;
+      }
+
+      // --- S3 ---
+      if (C > O) {
+        S3 = trunc(((H + L) / 2) - (H - L) * m19_3);
+      } else if (C < O) {
+        S3 = trunc(((H + L) / 2) - (H - L) * m18_5);
+      } else {
+        S3 = 0;
+      }
+
+      // (Optional) your PP = (R1 + S1) / 2, not displayed
+      // const PP = (R1 + S1) / 2;
+
+      // Display the six levels (as whole numbers)
+      document.getElementById('r3').textContent = R3;
+      document.getElementById('r2').textContent = R2;
+      document.getElementById('r1').textContent = R1;
+      document.getElementById('s1').textContent = S1;
+      document.getElementById('s2').textContent = S2;
+      document.getElementById('s3').textContent = S3;
+
+      // Show the result block
       document.getElementById('resultContainer').style.display = 'block';
     }
   </script>
