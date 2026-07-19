@@ -105,17 +105,17 @@
     <h2>OHLC Levels Calculator</h2>
 
     <!-- CHANGED: inputmode="decimal" forces numeric keypad with decimal point -->
-   <label>Open (O)</label>
-<input type="number" id="open" step="any" placeholder="100.50">
+  <label>Open (O)</label>
+<input type="number" id="open" inputmode="decimal" step="any" placeholder="100.50">
 
 <label>High (H)</label>
-<input type="number" id="high" step="any" placeholder="105.20">
+<input type="number" id="high" inputmode="decimal" step="any" placeholder="105.20">
 
 <label>Low (L)</label>
-<input type="number" id="low" step="any" placeholder="99.80">
+<input type="number" id="low" inputmode="decimal" step="any" placeholder="99.80">
 
 <label>Close (C)</label>
-<input type="number" id="close" step="any" placeholder="103.00">
+<input type="number" id="close" inputmode="decimal" step="any" placeholder="103.00">
     <button onclick="calculateLevels()">Calculate</button>
 
     <div class="result" id="resultContainer">
