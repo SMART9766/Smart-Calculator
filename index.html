@@ -45,7 +45,6 @@
     .level:last-child {
       border-bottom: none;
     }
-    /* Section headers */
     .section-header {
       font-weight: bold;
       background: #f0f0f0;
@@ -89,7 +88,7 @@
 </head>
 <body>
 
-  <!-- Password overlay (hidden after first unlock) -->
+  <!-- Password overlay -->
   <div id="passwordOverlay">
     <div class="password-box">
       <h2>App Locked</h2>
@@ -101,22 +100,26 @@
     </div>
   </div>
 
-  <!-- Main calculator (hidden until unlocked) -->
+  <!-- Main calculator -->
   <div id="mainApp" style="display: none;">
     <h2>OHLC Levels Calculator</h2>
+
+    <!-- CHANGED: inputmode="decimal" forces numeric keypad with decimal point -->
     <label>Open (O)</label>
-    <input type="number" id="open" placeholder="e.g. 100.50" step="any">
+    <input type="text" id="open" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="e.g. 100.50">
+
     <label>High (H)</label>
-    <input type="number" id="high" placeholder="e.g. 105.20" step="any">
+    <input type="text" id="high" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="e.g. 105.20">
+
     <label>Low (L)</label>
-    <input type="number" id="low" placeholder="e.g. 99.80" step="any">
+    <input type="text" id="low" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="e.g. 99.80">
+
     <label>Close (C)</label>
-    <input type="number" id="close" placeholder="e.g. 103.00" step="any">
+    <input type="text" id="close" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="e.g. 103.00">
 
     <button onclick="calculateLevels()">Calculate</button>
 
     <div class="result" id="resultContainer">
-      <!-- Section 1: Main Levels -->
       <div class="level"><span>Highest Resistance</span><strong id="r3"></strong></div>
       <div class="level"><span>HM2</span><strong id="hm2"></strong></div>
       <div class="level"><span>Higher Resistance</span><strong id="r2"></strong></div>
@@ -135,9 +138,8 @@
 
   <script>
     // ---------- Password protection ----------
-    const PASSWORD = "ohlc2024";  // <-- CHANGE THIS TO YOUR OWN PASSWORD
+    const PASSWORD = "ohlc2024";
 
-    // Check if already unlocked in this browser
     if (localStorage.getItem("ohlc_unlocked") === "true") {
       document.getElementById("passwordOverlay").style.display = "none";
       document.getElementById("mainApp").style.display = "block";
@@ -154,12 +156,11 @@
       }
     }
 
-    // Allow pressing Enter in password field
     document.getElementById("passwordInput").addEventListener("keypress", function(e) {
       if (e.key === "Enter") checkPassword();
     });
 
-    // ---------- Calculator with 11 levels ----------
+    // ---------- Calculator ----------
     function calculateLevels() {
       const O = parseFloat(document.getElementById('open').value);
       const H = parseFloat(document.getElementById('high').value);
@@ -184,7 +185,6 @@
 
       let R1, S1, R2, S2, R3, S3;
 
-      // ---------- Original 6 levels ----------
       if (C > O) {
         R1 = trunc(midpoint + halfRange * m39);
         S1 = trunc(midpoint - halfRange * m39);
@@ -212,23 +212,18 @@
         R3 = S3 = 0;
       }
 
-      // ---------- NEW: 5 additional levels ----------
       const Pivot = (R1 + S1) / 2;
       const HM1 = R1 + ((R2 - R1) * 0.786);
       const HM2 = R2 + ((R3 - R2) * 0.618);
-      const LM1 = S1 - ((S1 - S2) * 0.618);    // Note: S1 - S2 (positive number)
-      const LM2 = S2 - ((S2 - S3) * 0.786);    // Note: S2 - S3 (positive number)
+      const LM1 = S1 - ((S1 - S2) * 0.618);
+      const LM2 = S2 - ((S2 - S3) * 0.786);
 
-      // ---------- Display all 11 levels ----------
-      // Resistance zone (highest to lowest)
       document.getElementById('r3').textContent = R3;
       document.getElementById('hm2').textContent = trunc(HM2);
       document.getElementById('r2').textContent = R2;
       document.getElementById('hm1').textContent = trunc(HM1);
       document.getElementById('r1').textContent = R1;
-      // Pivot
       document.getElementById('pivot').textContent = Pivot.toFixed(2);
-      // Support zone (highest to lowest)
       document.getElementById('s1').textContent = S1;
       document.getElementById('lm1').textContent = trunc(LM1);
       document.getElementById('s2').textContent = S2;
