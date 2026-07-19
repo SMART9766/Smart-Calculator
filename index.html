@@ -45,6 +45,15 @@
     .level:last-child {
       border-bottom: none;
     }
+    /* Section headers */
+    .section-header {
+      font-weight: bold;
+      background: #f0f0f0;
+      padding: 8px 0;
+      margin-top: 8px;
+      text-align: center;
+      border-radius: 4px;
+    }
 
     /* ---------- Password overlay ---------- */
     #passwordOverlay {
@@ -107,18 +116,26 @@
     <button onclick="calculateLevels()">Calculate</button>
 
     <div class="result" id="resultContainer">
+      <!-- Section 1: Main Levels -->
       <div class="level"><span>Highest Resistance</span><strong id="r3"></strong></div>
+      <div class="level"><span>HM2</span><strong id="hm2"></strong></div>
       <div class="level"><span>Higher Resistance</span><strong id="r2"></strong></div>
+      <div class="level"><span>HM1</span><strong id="hm1"></strong></div>
       <div class="level"><span>High Resistance</span><strong id="r1"></strong></div>
+      <div class="section-header">Pivot</div>
+      <div class="level"><span>Pivot</span><strong id="pivot"></strong></div>
+      <div class="section-header">Support Levels</div>
       <div class="level"><span>Low Support</span><strong id="s1"></strong></div>
+      <div class="level"><span>LM1</span><strong id="lm1"></strong></div>
       <div class="level"><span>Lower Support</span><strong id="s2"></strong></div>
+      <div class="level"><span>LM2</span><strong id="lm2"></strong></div>
       <div class="level"><span>Lowest Support</span><strong id="s3"></strong></div>
     </div>
   </div>
 
   <script>
     // ---------- Password protection ----------
-    const PASSWORD = "Gary9766!!";  // <-- CHANGE THIS TO YOUR OWN PASSWORD
+    const PASSWORD = "ohlc2024";  // <-- CHANGE THIS TO YOUR OWN PASSWORD
 
     // Check if already unlocked in this browser
     if (localStorage.getItem("ohlc_unlocked") === "true") {
@@ -142,7 +159,7 @@
       if (e.key === "Enter") checkPassword();
     });
 
-    // ---------- Your calculator code (unchanged) ----------
+    // ---------- Calculator with 11 levels ----------
     function calculateLevels() {
       const O = parseFloat(document.getElementById('open').value);
       const H = parseFloat(document.getElementById('high').value);
@@ -167,6 +184,7 @@
 
       let R1, S1, R2, S2, R3, S3;
 
+      // ---------- Original 6 levels ----------
       if (C > O) {
         R1 = trunc(midpoint + halfRange * m39);
         S1 = trunc(midpoint - halfRange * m39);
@@ -194,11 +212,27 @@
         R3 = S3 = 0;
       }
 
+      // ---------- NEW: 5 additional levels ----------
+      const Pivot = (R1 + S1) / 2;
+      const HM1 = R1 + ((R2 - R1) * 0.786);
+      const HM2 = R2 + ((R3 - R2) * 0.618);
+      const LM1 = S1 - ((S1 - S2) * 0.618);    // Note: S1 - S2 (positive number)
+      const LM2 = S2 - ((S2 - S3) * 0.786);    // Note: S2 - S3 (positive number)
+
+      // ---------- Display all 11 levels ----------
+      // Resistance zone (highest to lowest)
       document.getElementById('r3').textContent = R3;
+      document.getElementById('hm2').textContent = trunc(HM2);
       document.getElementById('r2').textContent = R2;
+      document.getElementById('hm1').textContent = trunc(HM1);
       document.getElementById('r1').textContent = R1;
+      // Pivot
+      document.getElementById('pivot').textContent = Pivot.toFixed(2);
+      // Support zone (highest to lowest)
       document.getElementById('s1').textContent = S1;
+      document.getElementById('lm1').textContent = trunc(LM1);
       document.getElementById('s2').textContent = S2;
+      document.getElementById('lm2').textContent = trunc(LM2);
       document.getElementById('s3').textContent = S3;
 
       document.getElementById('resultContainer').style.display = 'block';
