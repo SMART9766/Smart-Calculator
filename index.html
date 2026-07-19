@@ -137,7 +137,7 @@
 
   <script>
     // ---------- Password protection ----------
-    const PASSWORD = "ohlc2024";
+    const PASSWORD = "Gary9766!!";
 
     if (localStorage.getItem("ohlc_unlocked") === "true") {
       document.getElementById("passwordOverlay").style.display = "none";
@@ -160,77 +160,80 @@
     });
 
     // ---------- Calculator ----------
-    function calculateLevels() {
-      const O = parseFloat(document.getElementById('open').value);
-      const H = parseFloat(document.getElementById('high').value);
-      const L = parseFloat(document.getElementById('low').value);
-      const C = parseFloat(document.getElementById('close').value);
+   function calculateLevels() {
+  const O = parseFloat(document.getElementById('open').value);
+  const H = parseFloat(document.getElementById('high').value);
+  const L = parseFloat(document.getElementById('low').value);
+  const C = parseFloat(document.getElementById('close').value);
 
-      if (isNaN(O) || isNaN(H) || isNaN(L) || isNaN(C)) {
-        alert('Please fill in all four OHLC values with numbers.');
-        return;
-      }
+  if (isNaN(O) || isNaN(H) || isNaN(L) || isNaN(C)) {
+    alert('Please fill in all four OHLC values with numbers.');
+    return;
+  }
 
-      const trunc = Math.trunc;
-      const midpoint = (H + L) / 2;
-      const halfRange = (H - L) / 2;
-      const fullRange = H - L;
+  const trunc = Math.trunc;
+  const midpoint = (H + L) / 2;
+  const halfRange = (H - L) / 2;
+  const fullRange = H - L;
 
-      const m39 = 1 - 0.39;
-      const m37 = 1 - 0.37;
-      const m42_5 = 1 - 0.425;
-      const m19_3 = 1 - 0.193;
-      const m18_5 = 1 - 0.185;
+  const m39 = 1 - 0.39;
+  const m37 = 1 - 0.37;
+  const m42_5 = 1 - 0.425;
+  const m19_3 = 1 - 0.193;
+  const m18_5 = 1 - 0.185;
 
-      let R1, S1, R2, S2, R3, S3;
+  let R1, S1, R2, S2, R3, S3;
 
-      if (C > O) {
-        R1 = trunc(midpoint + halfRange * m39);
-        S1 = trunc(midpoint - halfRange * m39);
-      } else if (C < O) {
-        R1 = trunc(midpoint + halfRange * m37);
-        S1 = trunc(midpoint - halfRange * m37);
-      } else {
-        R1 = S1 = 0;
-      }
+  // Original 6 levels (calculated with trunc, unchanged)
+  if (C > O) {
+    R1 = trunc(midpoint + halfRange * m39);
+    S1 = trunc(midpoint - halfRange * m39);
+  } else if (C < O) {
+    R1 = trunc(midpoint + halfRange * m37);
+    S1 = trunc(midpoint - halfRange * m37);
+  } else {
+    R1 = S1 = 0;
+  }
 
-      if (C > O || C < O) {
-        R2 = trunc(midpoint + fullRange * m42_5);
-        S2 = trunc(midpoint - fullRange * m42_5);
-      } else {
-        R2 = S2 = 0;
-      }
+  if (C > O || C < O) {
+    R2 = trunc(midpoint + fullRange * m42_5);
+    S2 = trunc(midpoint - fullRange * m42_5);
+  } else {
+    R2 = S2 = 0;
+  }
 
-      if (C > O) {
-        R3 = trunc(midpoint + fullRange * m19_3);
-        S3 = trunc(midpoint - fullRange * m19_3);
-      } else if (C < O) {
-        R3 = trunc(midpoint + fullRange * m18_5);
-        S3 = trunc(midpoint - fullRange * m18_5);
-      } else {
-        R3 = S3 = 0;
-      }
+  if (C > O) {
+    R3 = trunc(midpoint + fullRange * m19_3);
+    S3 = trunc(midpoint - fullRange * m19_3);
+  } else if (C < O) {
+    R3 = trunc(midpoint + fullRange * m18_5);
+    S3 = trunc(midpoint - fullRange * m18_5);
+  } else {
+    R3 = S3 = 0;
+  }
 
-      const Pivot = (R1 + S1) / 2;
-      const HM1 = R1 + ((R2 - R1) * 0.786);
-      const HM2 = R2 + ((R3 - R2) * 0.618);
-      const LM1 = S1 - ((S1 - S2) * 0.618);
-      const LM2 = S2 - ((S2 - S3) * 0.786);
+  // Additional 5 levels (calculated with full precision)
+  const Pivot = (R1 + S1) / 2;
+  const HM1 = R1 + ((R2 - R1) * 0.786);
+  const HM2 = R2 + ((R3 - R2) * 0.618);
+  const LM1 = S1 - ((S1 - S2) * 0.618);
+  const LM2 = S2 - ((S2 - S3) * 0.786);
 
-      document.getElementById('r3').textContent = R3;
-      document.getElementById('hm2').textContent = trunc(HM2);
-      document.getElementById('r2').textContent = R2;
-      document.getElementById('hm1').textContent = trunc(HM1);
-      document.getElementById('r1').textContent = R1;
-      document.getElementById('pivot').textContent = Pivot.toFixed(2);
-      document.getElementById('s1').textContent = S1;
-      document.getElementById('lm1').textContent = trunc(LM1);
-      document.getElementById('s2').textContent = S2;
-      document.getElementById('lm2').textContent = trunc(LM2);
-      document.getElementById('s3').textContent = S3;
+  // ---------- DISPLAY (changed to 2 decimal places) ----------
+  document.getElementById('r3').textContent = R3.toFixed(2);
+  document.getElementById('hm2').textContent = HM2.toFixed(2);
+  document.getElementById('r2').textContent = R2.toFixed(2);
+  document.getElementById('hm1').textContent = HM1.toFixed(2);
+  document.getElementById('r1').textContent = R1.toFixed(2);
+  document.getElementById('pivot').textContent = Pivot.toFixed(2);
+  document.getElementById('s1').textContent = S1.toFixed(2);
+  document.getElementById('lm1').textContent = LM1.toFixed(2);
+  document.getElementById('s2').textContent = S2.toFixed(2);
+  document.getElementById('lm2').textContent = LM2.toFixed(2);
+  document.getElementById('s3').textContent = S3.toFixed(2);
 
-      document.getElementById('resultContainer').style.display = 'block';
-    }
+  document.getElementById('resultContainer').style.display = 'block';
+}
   </script>
 </body>
 </html>
