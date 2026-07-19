@@ -160,7 +160,7 @@
     });
 
     // ---------- Calculator ----------
-   function calculateLevels() {
+  function calculateLevels() {
   const O = parseFloat(document.getElementById('open').value);
   const H = parseFloat(document.getElementById('high').value);
   const L = parseFloat(document.getElementById('low').value);
@@ -171,7 +171,6 @@
     return;
   }
 
-  const trunc = Math.trunc;
   const midpoint = (H + L) / 2;
   const halfRange = (H - L) / 2;
   const fullRange = H - L;
@@ -184,42 +183,42 @@
 
   let R1, S1, R2, S2, R3, S3;
 
-  // Original 6 levels (calculated with trunc, unchanged)
+  // ---------- Original 6 levels (REMOVED trunc) ----------
   if (C > O) {
-    R1 = trunc(midpoint + halfRange * m39);
-    S1 = trunc(midpoint - halfRange * m39);
+    R1 = midpoint + halfRange * m39;
+    S1 = midpoint - halfRange * m39;
   } else if (C < O) {
-    R1 = trunc(midpoint + halfRange * m37);
-    S1 = trunc(midpoint - halfRange * m37);
+    R1 = midpoint + halfRange * m37;
+    S1 = midpoint - halfRange * m37;
   } else {
     R1 = S1 = 0;
   }
 
   if (C > O || C < O) {
-    R2 = trunc(midpoint + fullRange * m42_5);
-    S2 = trunc(midpoint - fullRange * m42_5);
+    R2 = midpoint + fullRange * m42_5;
+    S2 = midpoint - fullRange * m42_5;
   } else {
     R2 = S2 = 0;
   }
 
   if (C > O) {
-    R3 = trunc(midpoint + fullRange * m19_3);
-    S3 = trunc(midpoint - fullRange * m19_3);
+    R3 = midpoint + fullRange * m19_3;
+    S3 = midpoint - fullRange * m19_3;
   } else if (C < O) {
-    R3 = trunc(midpoint + fullRange * m18_5);
-    S3 = trunc(midpoint - fullRange * m18_5);
+    R3 = midpoint + fullRange * m18_5;
+    S3 = midpoint - fullRange * m18_5;
   } else {
     R3 = S3 = 0;
   }
 
-  // Additional 5 levels (calculated with full precision)
+  // Additional 5 levels
   const Pivot = (R1 + S1) / 2;
   const HM1 = R1 + ((R2 - R1) * 0.786);
   const HM2 = R2 + ((R3 - R2) * 0.618);
   const LM1 = S1 - ((S1 - S2) * 0.618);
   const LM2 = S2 - ((S2 - S3) * 0.786);
 
-  // ---------- DISPLAY (changed to 2 decimal places) ----------
+  // Display all 11 levels with 2 decimal places
   document.getElementById('r3').textContent = R3.toFixed(2);
   document.getElementById('hm2').textContent = HM2.toFixed(2);
   document.getElementById('r2').textContent = R2.toFixed(2);
