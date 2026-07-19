@@ -106,16 +106,16 @@
 
     <!-- CHANGED: inputmode="decimal" forces numeric keypad with decimal point -->
    <label>Open (O)</label>
-<input type="text" id="open" inputmode="numeric" pattern="[0-9]*\.?[0-9]*" placeholder="100.50">
+<input type="text" id="open" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="100.50">
 
 <label>High (H)</label>
-<input type="text" id="high" inputmode="numeric" pattern="[0-9]*\.?[0-9]*" placeholder="105.20">
+<input type="text" id="high" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="105.20">
 
 <label>Low (L)</label>
-<input type="text" id="low" inputmode="numeric" pattern="[0-9]*\.?[0-9]*" placeholder="99.80">
+<input type="text" id="low" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="99.80">
 
 <label>Close (C)</label>
-<input type="text" id="close" inputmode="numeric" pattern="[0-9]*\.?[0-9]*" placeholder="103.00">
+<input type="text" id="close" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" placeholder="103.00">
 
     <button onclick="calculateLevels()">Calculate</button>
 
